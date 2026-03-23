@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Parshuram Panchal | Python & AI Developer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg:       #080c10;
+            --bg2:      #0d1117;
+            --surface:  rgba(255,255,255,0.032);
+            --border:   rgba(255,255,255,0.07);
+            --lime:     #aaff00;
+            --lime-dim: rgba(170,255,0,0.10);
+            --amber:    #f59e0b;
+            --text:     #e2e8f0;
+            --muted:    #5a6a80;
+            --soft:     #94a3b8;
+        }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            overflow-x: hidden;
+            min-height: 100vh;
+        }
+
+        /* grain overlay */
+        body::after {
+            content:'';
+            position:fixed; inset:0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+            opacity:0.028; pointer-events:none; z-index:9999;
+        }
+
+        /* ambient blobs */
+        .blob { position:fixed; border-radius:50%; filter:blur(120px); pointer-events:none; z-index:0; }
+        .blob-1 { width:550px;height:550px; background:rgba(170,255,0,0.055); top:-150px;right:-120px; animation:blobDrift 14s ease-in-out infinite alternate; }
+        .blob-2 { width:400px;height:400px; background:rgba(245,158,11,0.04); bottom:-80px;left:-80px; animation:blobDrift 10s ease-in-out infinite alternate-reverse; }
+        @keyframes blobDrift {
+            from{transform:translate(0,0) scale(1);}
+            to{transform:translate(30px,25px) scale(1.1);}
+        }
+
+        /* scanlines */
+        .scan {
+            position:fixed;inset:0;pointer-events:none;z-index:1;
+            background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,0.055) 2px,rgba(0,0,0,0.055) 4px);
+        }
+
+        /* layout */
+        .wrap {
+            position:relative;z-index:2;
+            max-width:940px;margin:0 auto;
+            padding:56px 24px 100px;
+        }
+
+        /* ── HERO ── */
+        .hero {
+            display:grid;
+            grid-template-columns:170px 1fr;
+            gap:52px; align-items:center;
+            margin-bottom:24px; padding:44px 48px;
+            background:var(--surface);
+            border:1px solid var(--border);
+            border-radius:24px;
+            backdrop-filter:blur(18px);
+            box-shadow:0 24px 64px rgba(0,0,0,0.55);
+            animation:riseIn 0.7s cubic-bezier(.22,1,.36,1) both;
+        }
+        @keyframes riseIn {
+            from{opacity:0;transform:translateY(32px);}
+            to{opacity:1;transform:translateY(0);}
+        }
+
+        /* profile circle */
+        .avatar-shell {
+            position:relative;
+            width:160px;height:160px;flex-shrink:0;
+        }
+        .avatar-shell::before {
+            content:'';position:absolute;inset:-5px;border-radius:50%;
+            background:conic-gradient(var(--lime) 0%, #00e5ff 25%, var(--amber) 50%, #ff4d8d 75%, var(--lime) 100%);
+            animation:spinRing 5s linear infinite;z-index:0;
+        }
+        .avatar-shell::after {
+            content:'';position:absolute;inset:-8px;border-radius:50%;
+            background:conic-gradient(var(--lime) 0%, #00e5ff 25%, var(--amber) 50%, #ff4d8d 75%, var(--lime) 100%);
+            filter:blur(16px);opacity:0.4;
+            animation:spinRing 5s linear infinite;z-index:0;
+        }
+        @keyframes spinRing { to{transform:rotate(360deg);} }
+
+        .avatar-disc {
+            position:relative;z-index:1;
+            width:160px;height:160px;
+            border-radius:50%;border:4px solid var(--bg);
+            overflow:hidden;background:#131c2b;
+        }
+        .avatar-disc img {
+            width:100%;height:100%;
+            object-fit:cover;object-position:center top;display:block;
+        }
+        .avatar-fallback {
+            width:100%;height:100%;
+            display:flex;align-items:center;justify-content:center;
+            font-family:'Outfit',sans-serif;font-size:3.2rem;font-weight:900;
+            color:var(--lime);background:rgba(170,255,0,0.06);
+        }
+
+        /* hero text */
+        .avail-badge {
+            display:inline-flex;align-items:center;gap:8px;
+            background:rgba(170,255,0,0.08);border:1px solid rgba(170,255,0,0.22);
+            color:var(--lime);font-size:0.72rem;
+            font-family:'JetBrains Mono',monospace;
+            padding:5px 14px;border-radius:50px;margin-bottom:14px;
+        }
+        .avail-dot {
+            width:7px;height:7px;border-radius:50%;background:var(--lime);
+            animation:blip 1.6s ease-in-out infinite;
+        }
+        @keyframes blip {
+            0%,100%{opacity:1;transform:scale(1);}
+            50%{opacity:.3;transform:scale(.65);}
+        }
+
+        .hero h1 {
+            font-size:clamp(2rem,4.5vw,3.1rem);
+            font-weight:900;line-height:1.05;letter-spacing:-1px;
+            color:var(--text);margin-bottom:8px;
+        }
+        .hero h1 span {
+            background:linear-gradient(110deg,var(--lime) 0%,#00e5ff 100%);
+            -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+        }
+        .role-line {
+            font-family:'JetBrains Mono',monospace;font-size:0.8rem;
+            color:var(--muted);letter-spacing:.5px;margin-bottom:16px;
+        }
+        .role-line b { color:var(--lime);font-weight:500; }
+        .hero-desc {
+            font-size:0.95rem;color:var(--soft);line-height:1.75;
+            max-width:440px;margin-bottom:26px;
+        }
+
+        /* buttons */
+        .btn-row{display:flex;flex-wrap:wrap;gap:10px;}
+        .btn {
+            font-family:'JetBrains Mono',monospace;font-size:0.78rem;font-weight:500;
+            padding:10px 22px;border-radius:10px;text-decoration:none;
+            border:1.5px solid transparent;transition:all .22s ease;
+            display:inline-flex;align-items:center;gap:8px;
+        }
+        .btn-lime { background:var(--lime);color:#080c10;border-color:var(--lime); }
+        .btn-lime:hover { box-shadow:0 0 28px rgba(170,255,0,0.45);transform:translateY(-2px); }
+        .btn-outline { border-color:var(--border);color:var(--soft);background:transparent; }
+        .btn-outline:hover { border-color:rgba(170,255,0,0.4);color:var(--lime);background:var(--lime-dim);transform:translateY(-2px); }
+
+        /* cards */
+        .card {
+            background:var(--surface);border:1px solid var(--border);
+            border-radius:20px;padding:36px 40px;margin-bottom:22px;
+            backdrop-filter:blur(14px);
+            box-shadow:0 16px 48px rgba(0,0,0,0.45);
+            transition:border-color .3s ease,transform .3s ease;
+            opacity:0;transform:translateY(24px);
+        }
+        .card.visible { opacity:1;transform:translateY(0);transition:opacity .6s ease,transform .6s ease; }
+        .card:hover { border-color:rgba(170,255,0,0.18); }
+
+        .card-eyebrow {
+            font-family:'JetBrains Mono',monospace;font-size:0.65rem;
+            letter-spacing:3px;text-transform:uppercase;color:var(--lime);
+            opacity:.7;margin-bottom:5px;
+        }
+        .card-title { font-size:1.45rem;font-weight:800;color:var(--text);margin-bottom:26px; }
+
+        /* skills */
+        .skills-wrap { display:flex;flex-wrap:wrap;gap:9px; }
+        .stag {
+            font-family:'JetBrains Mono',monospace;font-size:0.76rem;
+            padding:7px 15px;border-radius:8px;cursor:default;
+            border:1px solid rgba(170,255,0,0.16);background:rgba(170,255,0,0.04);
+            color:rgba(170,255,0,0.8);transition:all .2s ease;
+        }
+        .stag:hover {
+            background:var(--lime);color:#080c10;border-color:var(--lime);
+            box-shadow:0 0 16px rgba(170,255,0,0.35);transform:translateY(-2px);
+        }
+
+        /* timeline */
+        .tl { display:flex;flex-direction:column; }
+        .tl-row {
+            display:grid;grid-template-columns:14px 1fr;
+            column-gap:22px;padding-bottom:34px;position:relative;
+        }
+        .tl-row:last-child{padding-bottom:0;}
+        .tl-pin{display:flex;flex-direction:column;align-items:center;}
+        .tl-dot {
+            width:12px;height:12px;border-radius:50%;background:var(--lime);
+            margin-top:5px;flex-shrink:0;box-shadow:0 0 12px rgba(170,255,0,0.6);
+        }
+        .tl-line {
+            width:1px;flex:1;margin-top:7px;
+            background:linear-gradient(to bottom,rgba(170,255,0,.3),transparent);
+        }
+        .tl-row:last-child .tl-line{display:none;}
+        .tl-content h3 { font-size:1.05rem;font-weight:700;color:var(--text);margin-bottom:6px; }
+        .tl-badge {
+            display:inline-flex;align-items:center;gap:5px;
+            font-family:'JetBrains Mono',monospace;font-size:0.72rem;color:var(--muted);
+            background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);
+            padding:3px 12px;border-radius:20px;margin-bottom:10px;
+        }
+        .tl-badge.gold {
+            color:#fbbf24;background:rgba(245,158,11,0.07);border-color:rgba(245,158,11,0.25);
+        }
+        .tl-content p { font-size:0.9rem;color:var(--soft);line-height:1.72;margin-bottom:8px; }
+        .tl-content p strong { color:var(--text);font-weight:600; }
+
+        .cert-img {
+            width:100%;max-width:280px;border-radius:12px;margin-top:12px;
+            border:1px solid rgba(245,158,11,0.2);transition:transform .3s ease;
+        }
+        .cert-img:hover{transform:scale(1.03);}
+
+        /* github */
+        .gh-top { display:flex;align-items:center;gap:16px;margin-bottom:20px; }
+        .gh-logo {
+            width:48px;height:48px;border-radius:14px;
+            background:rgba(255,255,255,0.04);border:1px solid var(--border);
+            display:flex;align-items:center;justify-content:center;color:var(--text);flex-shrink:0;
+        }
+        .gh-meta{flex:1;}
+        .gh-meta a {
+            font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;
+            color:var(--lime);text-decoration:none;
+        }
+        .gh-meta a:hover{text-decoration:underline;}
+        .gh-meta p{font-size:0.8rem;color:var(--muted);margin-top:2px;}
+        .gh-stats-img {
+            width:100%;max-width:500px;border-radius:14px;display:block;margin-top:4px;
+        }
+
+        /* ── CONTACT — 3 separate proper columns ── */
+        .contact-grid {
+            display:grid;
+            grid-template-columns:repeat(3,1fr);
+            gap:14px;
+        }
+        .c-item {
+            display:flex;flex-direction:column;gap:6px;
+            background:rgba(255,255,255,0.03);
+            border:1px solid var(--border);
+            border-radius:14px;padding:20px 20px;
+            text-decoration:none;
+            transition:all .22s ease;
+        }
+        .c-item:hover {
+            border-color:rgba(170,255,0,0.35);
+            background:var(--lime-dim);
+            transform:translateY(-3px);
+            box-shadow:0 8px 28px rgba(170,255,0,0.1);
+        }
+        .c-icon{font-size:1.3rem;margin-bottom:2px;}
+        .c-label {
+            font-family:'JetBrains Mono',monospace;font-size:0.63rem;
+            color:var(--muted);letter-spacing:2px;text-transform:uppercase;
+        }
+        .c-value{font-size:0.86rem;font-weight:600;color:var(--text);word-break:break-all;}
+        .c-item:hover .c-value{color:var(--lime);}
+
+        /* footer */
+        footer {
+            text-align:center;margin-top:60px;
+            font-family:'JetBrains Mono',monospace;
+            font-size:0.7rem;color:var(--muted);opacity:.5;
+        }
+
+        /* responsive */
+        @media(max-width:680px){
+            .hero{grid-template-columns:1fr;text-align:center;gap:28px;padding:32px 24px;}
+            .avatar-shell{margin:0 auto;}
+            .hero-desc,.btn-row{justify-content:center;}
+            .contact-grid{grid-template-columns:1fr;}
+            .card{padding:28px 22px;}
+            .gh-top{flex-wrap:wrap;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+<div class="scan"></div>
+
+<div class="wrap">
+
+    <!-- HERO -->
+    <section class="hero">
+        <div class="avatar-shell">
+            <div class="avatar-disc">
+                <img
+                    src="72821.jpg"
+                    alt="Parshuram Panchal"
+                    onerror="this.style.display='none';this.nextElementSibling.style.display='flex';"
+                >
+                <div class="avatar-fallback">PP</div>
+            </div>
+        </div>
+
+        <div>
+            <div class="avail-badge">
+                <span class="avail-dot"></span>
+                Open to Internships &amp; Collaborations
+            </div>
+            <h1>Parshuram<br><span>Panchal</span></h1>
+            <div class="role-line">
+                <b>Python</b> &nbsp;·&nbsp; <b>AI/ML</b> &nbsp;·&nbsp; <b>GCP</b> &nbsp;·&nbsp; MCA Final Year
+            </div>
+            <p class="hero-desc">
+                Building intelligent, scalable web applications — from prompt-engineered quiz generators on Google Cloud to ML pipelines. I ship full-stack solutions end-to-end.
+            </p>
+            <div class="btn-row">
+                <a href="mailto:parshurampanchal789@gmail.com" class="btn btn-lime">✉ Email Me</a>
+                <a href="https://github.com/parshurampanchal" target="_blank" class="btn btn-outline">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                    </svg>
+                    GitHub
+                </a>
+                <a href="tel:+919054489003" class="btn btn-outline">📞 +91 90544 89003</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- SKILLS -->
+    <div class="card">
+        <div class="card-eyebrow">// tech_stack</div>
+        <div class="card-title">Technical Arsenal</div>
+        <div class="skills-wrap">
+            <span class="stag">Python</span>
+            <span class="stag">Flask</span>
+            <span class="stag">Google Cloud (GCP)</span>
+            <span class="stag">Cloud SQL</span>
+            <span class="stag">Cloud Run</span>
+            <span class="stag">Docker</span>
+            <span class="stag">Scikit-learn</span>
+            <span class="stag">OpenAI API</span>
+            <span class="stag">Prompt Engineering</span>
+            <span class="stag">OAuth 2.0</span>
+            <span class="stag">REST APIs</span>
+            <span class="stag">MySQL</span>
+            <span class="stag">JavaScript</span>
+            <span class="stag">Data Scraping</span>
+            <span class="stag">DSA</span>
+            <span class="stag">PHP</span>
+        </div>
+    </div>
+
+    <!-- EXPERIENCE -->
+    <div class="card">
+        <div class="card-eyebrow">// experience &amp; projects</div>
+        <div class="card-title">Journey So Far</div>
+        <div class="tl">
+
+            <div class="tl-row">
+                <div class="tl-pin"><div class="tl-dot"></div><div class="tl-line"></div></div>
+                <div class="tl-content">
+                    <h3>Software Engineer Intern — LatMatrix</h3>
+                    <span class="tl-badge">Jan 2026 – May 2026</span>
+                    <p>Developing robust software solutions and integrating AI pipelines in a fast-paced environment.</p>
+                </div>
+            </div>
+
+            <div class="tl-row">
+                <div class="tl-pin"><div class="tl-dot"></div><div class="tl-line"></div></div>
+                <div class="tl-content">
+                    <h3>LatQuizAI — AI/ML E-Quiz Generator</h3>
+                    <span class="tl-badge gold">🥈 Silver Position — OJT Project</span>
+                    <p>Full AI assessment platform on <strong>Google Cloud Platform</strong>. Backend: <strong>Python + Flask</strong> · <strong>Cloud SQL (MySQL)</strong> · <strong>Cloud Storage</strong> · <strong>Google OAuth 2.0</strong>.</p>
+                    <p>Applied strict prompt engineering with <strong>GPT-4o-mini</strong> to parse large textbooks and auto-generate MCQs, True/False &amp; Short Answer questions with chapter-wise targeting.</p>
+                    <img src="75424.jpg" alt="Silver Certificate" class="cert-img" onerror="this.style.display='none'">
+                </div>
+            </div>
+
+            <div class="tl-row">
+                <div class="tl-pin"><div class="tl-dot"></div><div class="tl-line"></div></div>
+                <div class="tl-content">
+                    <h3>Hotel Management System</h3>
+                    <span class="tl-badge">Full-Stack Project</span>
+                    <p>Comprehensive portal for room booking &amp; staff management — built with <strong>PHP, JavaScript &amp; MySQL</strong>.</p>
+                </div>
+            </div>
+
+            <div class="tl-row">
+                <div class="tl-pin"><div class="tl-dot"></div><div class="tl-line"></div></div>
+                <div class="tl-content">
+                    <h3>IBM SkillsBuild Certification</h3>
+                    <span class="tl-badge">Aug 2025</span>
+                    <p>Certified in <strong>"Getting Started with Artificial Intelligence"</strong> — strong foundation in modern AI concepts.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- GITHUB -->
+    <div class="card">
+        <div class="card-eyebrow">// open_source</div>
+        <div class="card-title">GitHub</div>
+        <div class="gh-top">
+            <div class="gh-logo">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+                    <path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.745 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/>
+                </svg>
+            </div>
+            <div class="gh-meta">
+                <a href="https://github.com/parshurampanchal" target="_blank">github.com/parshurampanchal</a>
+                <p>Python · Flask · GCP · AI/ML Projects</p>
+            </div>
+            <a href="https://github.com/parshurampanchal" target="_blank" class="btn btn-outline" style="flex-shrink:0;">View Profile →</a>
+        </div>
+        <img
+            src="https://github-readme-stats.vercel.app/api?username=parshurampanchal&show_icons=true&theme=dark&hide_border=true&bg_color=00000000&title_color=aaff00&text_color=94a3b8&icon_color=00e5ff&ring_color=aaff00"
+            alt="GitHub Stats"
+            class="gh-stats-img"
+            onerror="this.style.display='none'"
+        >
+    </div>
+
+    <!-- CONTACT — 3 clean separate columns -->
+    <div class="card">
+        <div class="card-eyebrow">// contact</div>
+        <div class="card-title">Initialize Connection</div>
+        <p style="color:var(--soft);font-size:.92rem;margin-bottom:22px;margin-top:-10px;">
+            Seeking internship opportunities and open to AI/ML collaborations.
+        </p>
+        <div class="contact-grid">
+            <a href="mailto:parshurampanchal789@gmail.com" class="c-item">
+                <span class="c-icon">📧</span>
+                <span class="c-label">Email</span>
+                <span class="c-value">parshurampanchal789<br>@gmail.com</span>
+            </a>
+            <a href="tel:+919054489003" class="c-item">
+                <span class="c-icon">📱</span>
+                <span class="c-label">Phone</span>
+                <span class="c-value">+91 90544 89003</span>
+            </a>
+            <a href="https://github.com/parshurampanchal" target="_blank" class="c-item">
+                <span class="c-icon">🐙</span>
+                <span class="c-label">GitHub</span>
+                <span class="c-value">github.com/<br>parshurampanchal</span>
+            </a>
+        </div>
+    </div>
+
+    <footer>&lt;/&gt; crafted by Parshuram Panchal · 2026 · Ahmedabad, India</footer>
+
+</div>
+
+<script>
+    // Scroll reveal only — no cursor
+    const obs = new IntersectionObserver(entries => {
+        entries.forEach(e => { if(e.isIntersecting) e.target.classList.add('visible'); });
+    }, { threshold: 0.08 });
+    document.querySelectorAll('.card').forEach(c => obs.observe(c));
+</script>
+</body>
+</html>
